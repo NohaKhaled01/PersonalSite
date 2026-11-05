@@ -24,7 +24,7 @@ Olist is a Brazilian e-commerce marketplace that connects small retailers to maj
 
 I also had the goal of learning how to build informative Power BI reports, how to build dbt layers, and gaining an understanding of how these tools work together in a professional setting.
 
-![Figure 1: Original dataset design and relations between tables](/public/images/olist-schema.png)
+![Figure 1: Original dataset design and relations between tables](../../../public/images/olist-schema.png)
 
 ## The Problem
 
