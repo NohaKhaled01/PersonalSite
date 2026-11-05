@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Inter Tight", sans-serif;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  /* Default Theme (Dark) - Softened Contrast */
+  --color-base: #050B14;       /* Almost black, deep blue undertone */
+  --color-surface: #0E1624;    /* Lifted blue-black for cards */
+  --color-onyx: #FAF9F6;       /* Cool, icy off-white for primary text */
+  --color-heading: #EAE6DF;    /* Soft, cool slate for headings */
+  --color-dim: #C0B9AE;        /* Muted slate blue for body text */
+  --color-border: #1E293B;     /* Visible but subtle dark blue border */
+  --color-border-strong: #52525B; 
+  
+  /* Accent Colors */
+  --color-accent: #D98A9C;
+  --color-accent-dark: #C06C84;
+}
+
+/* Light Theme Overrides */
+.light {
+  --color-base: #FAFAFA;
+  --color-surface: #FFFFFF;
+  --color-onyx: #111111;
+  --color-heading: #111111;
+  --color-dim: #666666;
+  --color-border: #E5E5E5;
+  --color-border-strong: #CCCCCC;
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Push the scroll target down so the sticky header doesn't cover it */
+.markdown-content h2,
+.markdown-content h3 {
+  scroll-margin-top: 120px;
+}
+
+/* --- Markdown Case Study Styles --- */
+.markdown-content h1 {
+  display: none; 
+}
+
+.markdown-content h2 {
+  @apply text-2xl font-display font-semibold text-heading mt-16 mb-6 
+}
+
+.markdown-content h3 {
+  @apply text-xl font-display font-semibold text-heading mt-10 mb-4;
+}
+
+.markdown-content p {
+  @apply text-lg text-dim leading-relaxed mb-6;
+}
+
+.markdown-content strong {
+  @apply text-heading font-semibold;
+}
+
+.markdown-content ul {
+  @apply list-disc list-outside ml-6 mb-8 text-lg text-dim leading-relaxed space-y-3;
+}
+.markdown-content ul > li::marker {
+  @apply text-accent;
+}
+
+.markdown-content ol {
+  @apply list-decimal list-outside ml-6 mb-8 text-lg text-dim leading-relaxed space-y-4;
+}
+.markdown-content ol > li::marker {
+  @apply text-accent font-mono font-bold; 
+}
+
+.markdown-content li > ul,
+.markdown-content li > ol {
+  @apply mt-3 mb-4 ml-2 pl-4 border-l border-border/50; 
+}
+.markdown-content li > ul > li::marker {
+  @apply text-dim; 
+}
+
+.markdown-content a {
+  @apply text-accent hover:text-onyx transition-colors underline decoration-accent/30 hover:decoration-onyx;
+}
+
+.markdown-content blockquote {
+  @apply border-l-2 border-accent pl-4 py-1 my-8 bg-accent/5 rounded-r text-onyx italic;
+}
+
+/* Code Blocks */
+.markdown-content pre {
+  @apply bg-surface border border-border rounded-lg p-6 overflow-x-auto mb-8 text-sm;
+}
+.markdown-content code {
+  @apply font-mono text-sm text-onyx;
+}
+/* Inline code */
+.markdown-content :not(pre) > code {
+  @apply bg-surface border border-border text-accent px-1.5 py-0.5 rounded text-sm;
+}
+
+/* Tables */
+.markdown-content table {
+  @apply w-full text-left border-collapse mb-8;
+}
+.markdown-content th {
+  @apply font-mono text-xs uppercase text-dim border-b border-border pb-3 pr-4;
+}
+.markdown-content td {
+  @apply border-b border-border/50 py-4 pr-4 text-dim text-base;
+}
+
+/* Images */
+.markdown-content img {
+  @apply rounded-lg border border-border my-0 w-full h-auto cursor-zoom-in transition-opacity hover:opacity-90;
+}
+
+/* Figure & Caption */
+.markdown-content figure {
+  @apply my-10;
+}
+
+.markdown-content figcaption {
+  @apply text-center font-mono text-xs text-dim mt-3;
+}

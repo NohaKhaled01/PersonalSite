@@ -1,16 +1,163 @@
 ---
+import Layout from "../layouts/Layout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout 
+  title="Noha Khaled — Analytics Engineer"
+  description="Analytics engineer with 7+ years of engineering problem-solving experience. I build 
+  reliable pipelines, data models, and reporting from messy, technical data."
+  >
+  
+  <!-- Hero Section -->
+  <div class="max-w-5xl"> 
+    
+ <!-- Top Kicker: Status & Location -->
+    <div class="font-mono text-sm text-dim flex flex-wrap items-center gap-3 mb-10">
+      
+      <!-- Availability Status with Tooltip -->
+      <div class="relative group flex items-center">
+        
+        <!-- The Trigger Link -->
+        <a href="/about#what-im-looking-for" class="flex items-center gap-2 text-onyx hover:text-accent transition-colors underline decoration-dotted decoration-border-strong underline-offset-4 hover:decoration-accent">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+          </span>
+          Open to new roles 
+        </a>
+
+        <!-- The Floating Tooltip -->
+        <div class="absolute top-full left-0 mt-4 w-72 p-4 bg-surface border border-border rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 pointer-events-none transform translate-y-2 group-hover:translate-y-0">
+          <p class="font-mono text-xs text-accent uppercase tracking-wider mb-2 font-semibold">
+            What I'm looking for
+          </p>
+          <p class="text-sm text-dim leading-relaxed">
+            Analytics Engineer or Data Analyst roles. 
+            <br> Fully remote, locally or internationally. 
+            <br> Hybrid locally.
+          </p>
+        </div>
+
+      </div>
+
+      <span class="text-border-strong">·</span>
+      <span>Cairo, EG</span>
+      <span class="text-border-strong">·</span>
+      <span id="cairo-time">--:-- --</span> 
+      <span class="text-border-strong">·</span>
+      <span>Where you are: <span id="local-time">--:-- --</span></span> 
+    </div>
+
+    <!-- 1. The Name -->
+    <h1 class="text-6xl md:text-8xl font-display font-bold tracking-tighter text-onyx">
+      Noha Khaled
+    </h1>
+    
+    <!-- 2. The Subtitle -->
+    <p class="mt-4 text-xl md:text-2xl font-mono text-accent">
+      Analytics Engineer
+    </p>
+
+    <!-- 3. The Bio -->
+    <p class="mt-10 text-lg md:text-xl text-dim leading-relaxed max-w-3xl">
+      7+ years of engineering problem-solving. I create pipelines, models and trusted reporting out of messy and technical data.
+    </p>
+
+    <!-- 4. The Buttons -->
+    <div class="mt-10 flex items-center gap-4">
+      <a href="/work" class="bg-accent text-base text-base px-6 py-3 rounded-md font-medium hover:bg-accent-dark transition-colors">
+        View my work
+      </a>
+      <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" class="text-onyx font-medium hover:text-accent transition flex items-center gap-1">
+        Download resume ↗
+      </a>
+    </div>
+  </div>
+
+  
+
+  <!-- Featured Work Section -->
+  <section class="mt-24">
+    <h2 class="text-3xl font-display font-semibold tracking-tight text-onyx">
+      Featured Work
+    </h2>
+    <div class="mt-8 grid md:grid-cols-2 gap-6">
+      
+      <ProjectCard 
+        title="Engineering Simulation Data Pipeline"
+        description="A normalized MySQL database and Python ETL pipeline that consolidated simulation data from four scattered sources into one queryable source — with fuzzy matching and change detection so repeated team runs stayed clean."
+        tags={["Python", "MySQL", "SQLAlchemy", "Fuzzy matching"]}
+        url="/work/case-engineering-pipeline"
+      />
+
+      <ProjectCard 
+        title="Olist E-commerce Analytics (dbt)"
+        description="A 9-table MySQL model of 90K+ orders, rebuilt in dbt Core + DuckDB as a proper star schema — including fixing a grain error that had inflated customer-retention figures."
+        tags={["dbt", "DuckDB", "MySQL", "Power BI"]}
+        url="/work/case-olist-dbt"
+      />
+
+    </div>
+  </section>
+
+  <!-- About Teaser -->
+   <!-- About Teaser: Option 1 -->
+  <section class="mt-24 max-w-5xl">
+    <p class="font-mono text-sm text-accent uppercase tracking-wider mb-4">Background</p>
+    <p class="text-dim text-lg md:text-xl leading-relaxed">
+      Mechanical engineer by training, 7+ years in simulation and CFD, lead technical analyst by the end — now building analytics systems using the 
+      same skillset: understand the system, fix it, and explain what you did well.
+    </p>
+    <a href="/about" class="mt-6 inline-flex items-center gap-2 text-onyx font-medium hover:text-accent transition-colors">
+      More about me <span class="text-accent">→</span>
+    </a>
+  </section>
+
+</Layout>
+
+<script>
+  // Time script
+  document.addEventListener('astro:page-load', () => {
+  const cairoTimeEl = document.getElementById('cairo-time');
+  const localTimeEl = document.getElementById('local-time');
+
+  const updateTimes = () => {
+    const now = new Date();
+    if (cairoTimeEl) {
+      cairoTimeEl.textContent = now.toLocaleTimeString('en-GB', { timeZone: 'Africa/Cairo', hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+    if (localTimeEl) {
+      localTimeEl.textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+  }
+
+  if (cairoTimeEl || localTimeEl) {
+    updateTimes();
+    // Note: this interval will stack if you navigate back and forth a lot, 
+    // but for a portfolio site it's fine. 
+    setInterval(updateTimes, 60000);
+  }
+});
+
+  // Copy Email script
+  const copyBtn = document.getElementById('copy-email');
+  const emailText = document.getElementById('email-text');
+  
+  if (copyBtn && emailText) {
+    copyBtn.addEventListener('click', async () => {
+      const email = copyBtn.getAttribute('data-email');
+      try {
+        await navigator.clipboard.writeText(email);
+        const originalText = emailText.innerText;
+        emailText.innerText = "Copied!";
+        setTimeout(() => {
+          emailText.innerText = originalText;
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy email: ', err);
+        window.location.href = `mailto:${email}`;
+      }
+    });
+  }
+</script>

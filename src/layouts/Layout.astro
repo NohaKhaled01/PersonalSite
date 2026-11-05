@@ -1,0 +1,109 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const { 
+  title, 
+  description = "Analytics engineer with 7+ years of engineering problem-solving experience. I build reliable pipelines, data models, and reporting from messy, technical data." 
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <ClientRouter />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+
+    <!-- Logo -->
+     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+     
+  <!-- Theme Script (Must be in head to prevent flash of unstyled content) -->
+    <script is:inline>
+      // Helper functions
+      const getTheme = () => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+          return 'light';
+        }
+        return 'light';
+      };
+
+      const applyTheme = (theme) => {
+        if (theme === 'light') {
+          document.documentElement.classList.add('light');
+          document.documentElement.classList.remove('dark');
+        } else {
+          document.documentElement.classList.add('dark');
+          document.documentElement.classList.remove('light');
+        }
+      };
+
+      // 1. Apply theme immediately on initial load to prevent flash
+      applyTheme(getTheme());
+
+      // 2. Apply theme again every time a new page is loaded via ClientRouter
+      document.addEventListener('astro:page-load', () => {
+        applyTheme(getTheme());
+      });
+    </script>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+  </head>
+  <body class="bg-base text-onyx font-sans antialiased min-h-screen flex flex-col">
+    
+    <Header />
+
+    <main class="flex-grow max-w-6xl mx-auto w-full px-6 pt-16 pb-20">
+      <slot />
+      <Footer />
+    </main>
+
+    <!-- Unified Copy Email Script -->
+    <script>
+      document.addEventListener('astro:page-load', () => {
+        const copyButtons = document.querySelectorAll('.copy-email-btn');
+
+        copyButtons.forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const email = btn.getAttribute('data-email');
+            const textSpan = btn.querySelector('.email-text');
+            if (!textSpan) return;
+
+            try {
+              await navigator.clipboard.writeText(email);
+              const originalText = textSpan.innerText;
+              textSpan.innerText = "Copied!";
+              
+              setTimeout(() => {
+                textSpan.innerText = originalText;
+              }, 2000);
+            } catch (err) {
+              console.error('Failed to copy email: ', err);
+              window.location.href = `mailto:${email}`;
+            }
+          });
+        });
+      });
+    </script>
+
+  </body>
+</html>

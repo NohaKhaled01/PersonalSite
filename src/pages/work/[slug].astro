@@ -1,0 +1,222 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("work");
+  return projects.map((project) => ({
+    params: { slug: project.id }, 
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+// We also destructure 'headings' here
+const { Content, headings } = await render(project); 
+
+// Filter to only show H2s and H3s (depth 2 and 3) in the sidebar to keep it clean
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+
+// 1. Calculate reading time
+// Average reading speed is ~200 words per minute for technical content
+const wordCount = project.body ? project.body.split(/\s+/).length : 0;
+const readingTime = Math.ceil(wordCount / 200);
+---
+
+<Layout title={`${project.data.title} — Noha Khaled`}>
+  
+  <!-- Changed to a max-w-6xl flex container to fit the sidebar -->
+  <div class="max-w-7xl mx-auto flex gap-16 relative items-start">
+    
+    <!-- Main Article Column -->
+    <article class="flex-1 max-w-3xl min-w-0">
+      
+      <!-- Back Button -->
+      <a href="/work" class="inline-flex items-center gap-2 font-mono text-sm text-dim hover:text-accent transition-colors mb-12">
+        <span>←</span> Back to work
+      </a>
+
+      <!-- Article Header -->
+      <header class="mb-12 border-b border-border pb-8">
+        <h1 class="text-4xl md:text-5xl font-display font-bold tracking-tight text-onyx leading-tight">
+          {project.data.title}
+        </h1>
+        
+        <!-- 2. Add reading time to the metadata row -->
+
+          <div class="mt-6 flex flex-wrap gap-2">
+
+            <!-- Tags -->
+            {project.data.tags.map((tag) => (
+              <span class="font-mono text-xs px-2.5 py-1 rounded bg-surface border border-border text-dim">
+                {tag}
+              </span>
+            ))}
+          
+
+          <!-- Reading Time -->
+          <span class="font-mono text-xs text-dim flex items-center gap-1.5 ml-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            {readingTime} min read
+          </span>
+
+          </div>
+        
+        </header>
+
+      <!-- The Markdown Content -->
+      <div class="markdown-content">
+        <Content />
+      </div>
+
+    </article>
+
+    <!-- Table of Contents Sidebar (Hidden on mobile) -->
+        <!-- Table of Contents Sidebar -->
+    <aside class="hidden lg:block w-56 shrink-0 sticky top-40 ml-auto">
+      
+      <!-- Replaced the <p> tag with a button -->
+      <button id="scroll-to-top" class="group flex items-center gap-1.5 font-mono text-xs text-accent uppercase tracking-wider mb-4 font-semibold hover:text-onyx transition-colors cursor-pointer">
+        On this page
+      </button>
+
+      <nav class="space-y-2 border-l border-border">
+        {toc.map((heading) => (
+          <a 
+            href={`#${heading.slug}`} 
+            class:list={[
+              "toc-link block transition-colors border-l border-transparent -ml-[1px]",
+              heading.depth === 2 
+                ? "pl-4 text-sm text-dim hover:text-onyx font-medium" 
+                : "pl-8 text-[13px] text-dim/80 hover:text-onyx"
+            ]}
+          >
+            {heading.text}
+          </a>
+        ))}
+      </nav>
+    </aside>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div id="image-modal" class="fixed inset-0 z-[100] bg-base/95 backdrop-blur-md hidden items-center justify-center p-4 md:p-12 opacity-0 transition-opacity duration-300">
+    <button id="close-modal" class="absolute top-6 right-6 text-onyx hover:text-accent p-2 cursor-pointer transition-colors bg-surface/50 rounded-full backdrop-blur-sm" aria-label="Close image">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+    <img id="modal-image" src="" alt="Zoomed image" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300" />
+  </div>
+
+</Layout>
+
+<style>
+  /* Use standard CSS to avoid Tailwind @apply scoping issues in Astro */
+  .toc-link.active {
+    color: var(--color-accent) !important;
+    border-left-color: var(--color-accent) !important;
+    font-weight: 500;
+  }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    
+    // --- 1. Lightbox Script ---
+    const images = document.querySelectorAll('.markdown-content img');
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.getElementById('modal-image');
+    const closeBtn = document.getElementById('close-modal');
+
+    if (images.length > 0 && modal && modalImg && closeBtn) {
+      images.forEach(img => {
+        img.addEventListener('click', () => {
+          modalImg.src = img.src;
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+          setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modalImg.classList.remove('scale-95');
+            modalImg.classList.add('scale-100');
+          }, 10);
+          document.body.style.overflow = 'hidden';
+        });
+      });
+
+      const closeModal = () => {
+        modal.classList.add('opacity-0');
+        modalImg.classList.add('scale-95');
+        modalImg.classList.remove('scale-100');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          document.body.style.overflow = '';
+        }, 300);
+      };
+
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
+    }
+
+    // --- 2. Open Links in New Tab ---
+    const contentLinks = document.querySelectorAll('.markdown-content a');
+    contentLinks.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && (href.startsWith('http') || href.endsWith('.pdf'))) {
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+
+            // --- 3. Table of Contents Scrollspy ---
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const headings = Array.from(document.querySelectorAll('.markdown-content h2, .markdown-content h3'));
+
+    // Scroll to Top Button Logic
+    const scrollToTopBtn = document.getElementById('scroll-to-top');
+    if (scrollToTopBtn) {
+      scrollToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    if (tocLinks.length > 0 && headings.length > 0) {
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px 0px -80% 0px', 
+        threshold: 0
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            tocLinks.forEach(link => link.classList.remove('active'));
+            
+            const id = entry.target.id;
+            const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+            if (activeLink) activeLink.classList.add('active');
+          }
+        });
+      }, observerOptions);
+
+      headings.forEach(heading => observer.observe(heading));
+
+      // Combined Scroll Logic (Top & Bottom Fallbacks)
+      window.addEventListener('scroll', () => {
+        // 1. Remove highlight if at the very top of the page
+        if (window.scrollY < 100) {
+          tocLinks.forEach(link => link.classList.remove('active'));
+          return; // Exit early to skip the bottom check
+        }
+
+        // 2. Force the last link to highlight when reaching the bottom of the page
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 10) {
+          tocLinks.forEach(link => link.classList.remove('active'));
+          // Find the last heading and highlight its corresponding link
+          const lastHeadingId = headings[headings.length - 1].id;
+          const lastLink = document.querySelector(`.toc-link[href="#${lastHeadingId}"]`);
+          if (lastLink) lastLink.classList.add('active');
+        }
+      });
+    }
+  });
+</script>

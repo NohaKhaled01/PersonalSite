@@ -1,0 +1,39 @@
+---
+// src/components/Footer.astro
+const currentPath = Astro.url.pathname;
+const isContactPage = currentPath === '/contact' || currentPath === '/contact/';
+---
+
+<footer class="mt-32 pt-12 border-t border-border pb-12">
+  <div class="text-center">
+    
+    <!-- Only show the CTA if we are NOT on the contact page -->
+    {!isContactPage && (
+      <>
+        <h2 class="text-2xl font-display font-semibold text-onyx">
+          Hiring, or have a messy data problem?
+        </h2>
+        
+        <div class="mt-6 flex items-center justify-center gap-6 text-sm font-medium">
+          <button class="copy-email-btn group flex items-center gap-1 text-accent hover:text-onyx transition-colors cursor-pointer" data-email="hello@nohakhalid.com">
+            <span class="email-text">hello@nohakhalid.com</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-hover:opacity-100 transition-opacity"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+          
+          <a href="https://www.linkedin.com/in/nuha-khaled-mahmoud/" target="_blank" rel="noopener noreferrer" class="text-accent hover:text-onyx transition-colors">LinkedIn</a>
+          <a href="https://github.com/NohaKhaled01" target="_blank" rel="noopener noreferrer" class="text-accent hover:text-onyx transition-colors">GitHub</a>
+        </div>
+      </>
+    )}
+    
+    <!-- The copyright text always shows. 
+         We adjust the margin slightly if the CTA is hidden so it doesn't look like it's floating too high -->
+    <p class:list={[
+      "font-mono text-xs text-dim",
+      isContactPage ? "mt-0" : "mt-12"
+    ]}>
+      © 2026 Noha Khaled. Built with Astro.
+    </p>
+    
+  </div>
+</footer>
