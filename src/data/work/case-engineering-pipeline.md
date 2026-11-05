@@ -1,6 +1,6 @@
 ---
 title: Engineering Simulation Data Pipeline
-description: A normalized MySQL database and Python ETL pipeline that consolidated simulation data from four scattered sources into one queryable source — with fuzzy matching and change detection so repeated team runs stayed clean.
+description: A normalized MySQL database and Python ETL pipeline that consolidated simulation data from four scattered sources into one queryable source — with fuzzy matching and change detection.
 tags: ["Python", "MySQL", "SQLAlchemy", "Pandas", "Fuzzy matching"]
 order: 1
 ---

@@ -106,7 +106,7 @@ The following table details the final dimensions and facts tables:
 | dim_sellers (sellers + geolocation per zip) | fct_reviews (grain: one review per order) |
 | dim_date (generated calendar, 2016–2018) | |
 
-![Figure 2: Lineage Graph from Phase 2](/public/images/olist-dbt-lineage-graph.png)
+![Figure 2: Lineage Graph from Phase 2](../../../public/images/olist-dbt-lineage-graph.png)
 
 ### Customer Retention: how dbt caught a grain error
 
