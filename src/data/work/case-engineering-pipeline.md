@@ -46,7 +46,7 @@ That requirements list, alongside domain knowledge and normalization rules, drov
 
 The initial design was fully normalized for efficiency and easy future additions; I later introduced limited denormalization to make it easier to use. The initial design had eight tables, with a top-level parent table (*projects*) from which connections flowed to the rest of the tables. Two additional tables (*flowlines_meshes & flowlines_materials*) were added mid-development to solve duplication issues, as explained below.
 
-![Figure 1: Final schema diagram](public/images/engineering-schema.png)
+![Figure 1: Final schema diagram](../../../public/images/engineering-schema.png)
 
 
 ### The ETL flow
