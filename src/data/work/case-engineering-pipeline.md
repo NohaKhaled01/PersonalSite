@@ -1,6 +1,6 @@
 ---
 title: Engineering Simulation Data Pipeline
-description: A normalized MySQL database and Python ETL pipeline that consolidated simulation data from four scattered sources into one queryable source — with fuzzy matching and change detection.
+description: A normalized MySQL database and Python ETL pipeline that consolidated simulation data from four scattered sources into one queryable source, with fuzzy matching and change detection.
 tags: ["Python", "MySQL", "SQLAlchemy", "Pandas", "Fuzzy matching"]
 order: 1
 ---
@@ -16,7 +16,7 @@ order: 1
 
 ## The Problem: Years of valuable data nobody could search
 
-Technical Analysts built simulation models, analyzed results, and prepared client reports. But the data lived in disconnected places: cloud storage, local servers, online tracking boards. That meant duplication; the same model saved twice with no way to trace the copies, plus inconsistent naming and no standardization, and a work process that was updated every year or two.
+Technical Analysts built simulation models, analyzed results, and prepared client reports. The data for each step lived in a disconnected place: cloud storage, local servers, online tracking boards. Unconnected locations meant duplication; the same model could be saved in two places with no way to trace the two copies to each other. Naming conventions were also inconsistent and unreliable. The work process was updated every year or two, and no standardization rules existed.
 
 Two things followed:
 
@@ -26,9 +26,9 @@ Two things followed:
 
 ## My Role & Constraints
 
-I was the technical team leader, seven years into the firm. I had access to every model and storage location, and I carried the institutional memory; each era’s modelling specs, the updates made over the years, and the client's most frequent requests and issues that required digging into old records.
+I was the technical team leader, seven years into the firm. I had access to every model and storage location, and I carried the work memory; each era’s modelling specs, the updates made over the years, and the client's most frequent requests and issues that required digging into old records.
 
-<span class="text-accent">→</span> The project's goal wasn’t to replace or connect the systems in use. It was to log all existing data in a structured format and make room for future data too. 
+<span class="text-accent">→</span> The project’s scope was not to rebuild the systems the team used or connect them, but to log all existing data in a tructured format and allow future data to be logged as well. I was working around the systems in use, not against them.
 
 *The original system and its data are internal, so this case study covers the problem and methods, not the specific architecture or client outcomes. Snapshots and details are anonymized for confidentiality. The public rebuild is linked below.*
 
@@ -44,30 +44,32 @@ The database had to:
 
 That requirements list, alongside domain knowledge and normalization rules, drove the tables and entities, the columns inside each, and the relationships between them. I tested the design with mock runs simulating the team’s usage and checked every requirement was met. 
 
-The initial design was fully normalized for efficiency and easy future additions; I later introduced limited denormalization to make it easier to use. The initial design had eight tables, with a top-level parent table (*projects*) from which connections flowed to the rest of the tables. Two additional tables (*flowlines_meshes & flowlines_materials*) were added mid-development to solve duplication issues, as explained below.
+The initial design was fully normalized for efficiency and easy future additions, with limited denormalization introduced later to make the database easier to use. I started with eight tables, with a top-level parent table (*projects*) from which connections flowed to the rest of the tables. I later added two additional tables mid-development (*flowlines_meshes & flowlines_materials*) to solve duplication issues, as explained below.
 
 ![Figure 1: Final schema diagram](../../../public/images/engineering-schema.png)
 
 
 ### The ETL flow
 
-I wanted the Extraction–Transformation–Loading flow to run as a continuous process through Python scripts. Since the data was scattered across several locations, it would run in stages—newest locations first, older ones after. The scripts had to run independently in the designed parent-child order across different locations, without duplication, and while keeping primary key–foreign key relationships intact.
+I wanted the ETL flow to run as a continuous process through Python scripts. Since the data was scattered across several locations, it would run in stages—newest locations first, older ones after. The scripts had to run independently in the designed parent-child order across different locations, without duplication, and while keeping primary key–foreign key relationships intact.
 
-<span class="text-accent">→</span> How it works: Each run connects to the database, pulls relevant records for comparison, then pushes new records back. I compared records using regex and fuzzy matching; in some cases, using a two-step approach; filter first, then apply token-based matching to find the best matches. That was essential because the data wasn’t standardized.
+<span class="text-accent">→</span> How I set it up: Each run connects to the database, pulls relevant records for comparison and PK-FK connections, then pushes the new records back. 
+
+I compared records using regex and fuzzy matching; in some cases, using a two-step approach; filter first, then apply token-based matching to find the best matches. That was essential to get over the lack of data standardization.
 
 ### Top level missing older models’ data
 
-The data existed at three levels, and the work process changed every year or two. The top level held project metadata, but those regular updates meant it sometimes lacked earlier years’ data.
+The data existed at three levels, with the project's metadata living at the top level. The work process also changed every year or two, and these regular updates meant that the top level sometimes lacked earlier years’ data.
 
-Left unchecked, data could attach to the wrong parent when the correct parent data was missing. Automatic matching alone wouldn’t fix this: it would return a low matching score but still proceed. And applying a score threshold wouldn’t work either: the lack of standardization meant fuzzy matching sometimes gave a low score to a correct match.
+Left unchecked, data could attach to the wrong parent when the correct parent data was missing. Automatic fuzzy matching alone wouldn’t fix this: it would return a low matching score but still proceed. And applying a score threshold wouldn’t work either: the lack of standardization meant fuzzy matching sometimes gave a low score to a correct match.
 
-So I added a manual review checkpoint before any ingestion. A separate script had to run first in every data location, outputting a .csv of the matches it found. I or another user would review those matches and flag any data without a correct match in the database. In those cases, the metadata had to be added another way before ingestion could continue.
+I had to rely on human input for this stage. I added a manual review checkpoint before any ingestion, where a separate script was run first in every data location, outputting a .csv file containing matches between projects in the current data location, and the projects already in the database. In cases of zero matches, the metadata had to be added to the database first before ingestion could continue.
 
 ### Preventing duplication
 
-Data extracted from the simulation models populated two tables, *parts and flowlines*, plus their child tables. By design, models could contain similar flowlines and distinct parts, and avoiding duplicate flowline entries was crucial to the database’s original goals.
+Data extracted from the simulation models populated two tables, *flowlines* and *parts*, plus their child tables. By design, models could contain similar *flowlines* and different *parts*. Avoiding duplicate flowline entries was crucial to maintaining the database’s original goals.
 
-To achieve that, I extracted metadata describing the flowlines and stored it in two newly added tables (*flowlines_meshes & flowlines_materials*). During ingestion, this metadata was compared against what was already in the database: if it was new, ingestion continued; if not, the model was skipped.
+To avoid flowline duplications, I extracted metadata describing the flowlines and stored it in two newly added tables (*flowlines_meshes & flowlines_materials*). During ingestion, this metadata was compared against what was already in the database: if it was new, ingestion continued; if not, the model was skipped.
 
 ## What Changed
 
@@ -86,11 +88,13 @@ To achieve that, I extracted metadata describing the flowlines and stored it in 
 
 ## Where it is now
 
-In June 2026, the firm shut down with the project at 80% completion. Eight of the ten tables were complete and operational; two, *flowline_data* and *parts_results*, were still under development.
+When the firm shut down, eight of the ten tables were complete and operational; two, *flowline_data* and *parts_results*, were still under development.
 
-After the closure, I chose not to finish those two tables. Instead, I built what the next phase would have needed: an automated ETL pipeline for future data, running from the moment files land in Azure Blob Storage to a final, ready-to-query database for the team.
+After the closure, I chose not to finish those two tables. Instead, I built what the next phase would have needed: an automated ETL pipeline for future data, running from the moment files land in Azure Blob Storage to a final, ready-to-query database for the team. Case study coming soon.
 
-I wrote this up as a separate case study: [Automating the simulation data pipeline on Azure](link).
+I am currently writing the case study for that project. Meanwhile, check the repo on [GitHub](https://github.com/NohaKhaled01/EngineeringSimulationDataWarehouse_Azure_MySql)
+
+<!-- I wrote this up as a separate case study: [Automating the simulation data pipeline on Azure](link). -->
 
 ## See the code
 
