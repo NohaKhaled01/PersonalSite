@@ -98,11 +98,25 @@ const readingTime = Math.ceil(wordCount / 200);
     </aside>
   </div>
 
-  <!-- Lightbox Modal -->
+    <!-- Lightbox Modal (Hidden by default) -->
   <div id="image-modal" class="fixed inset-0 z-[100] bg-base/95 backdrop-blur-md hidden items-center justify-center p-4 md:p-12 opacity-0 transition-opacity duration-300">
-    <button id="close-modal" class="absolute top-6 right-6 text-onyx hover:text-accent p-2 cursor-pointer transition-colors bg-surface/50 rounded-full backdrop-blur-sm" aria-label="Close image">
+    
+    <!-- Close Button -->
+    <button id="close-modal" class="absolute top-6 right-6 text-onyx hover:text-accent p-2 cursor-pointer transition-colors bg-surface/50 rounded-full backdrop-blur-sm z-10" aria-label="Close image">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
     </button>
+
+    <!-- Previous Button -->
+    <button id="prev-image" class="absolute left-4 md:left-12 text-onyx hover:text-accent p-3 cursor-pointer transition-colors bg-surface/50 rounded-full backdrop-blur-sm z-10" aria-label="Previous image">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+
+    <!-- Next Button -->
+    <button id="next-image" class="absolute right-4 md:right-12 text-onyx hover:text-accent p-3 cursor-pointer transition-colors bg-surface/50 rounded-full backdrop-blur-sm z-10" aria-label="Next image">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+    
+    <!-- The Zoomed Image -->
     <img id="modal-image" src="" alt="Zoomed image" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300" />
   </div>
 
@@ -120,26 +134,34 @@ const readingTime = Math.ceil(wordCount / 200);
 <script>
   document.addEventListener('astro:page-load', () => {
     
-    // --- 1. Lightbox Script ---
-    const images = document.querySelectorAll('.markdown-content img');
+    // --- 1. Lightbox & Keyboard Navigation Script ---
+    const images = Array.from(document.querySelectorAll('.markdown-content img'));
     const modal = document.getElementById('image-modal');
     const modalImg = document.getElementById('modal-image');
     const closeBtn = document.getElementById('close-modal');
+    const prevBtn = document.getElementById('prev-image');
+    const nextBtn = document.getElementById('next-image');
+    
+    let currentIndex = 0;
 
-    if (images.length > 0 && modal && modalImg && closeBtn) {
-      images.forEach(img => {
-        img.addEventListener('click', () => {
-          modalImg.src = img.src;
-          modal.classList.remove('hidden');
-          modal.classList.add('flex');
-          setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            modalImg.classList.remove('scale-95');
-            modalImg.classList.add('scale-100');
-          }, 10);
-          document.body.style.overflow = 'hidden';
-        });
-      });
+    if (images.length > 0 && modal && modalImg) {
+      
+      const showImage = (index) => {
+        currentIndex = index;
+        modalImg.src = images[currentIndex].src;
+      };
+
+      const openModal = (index) => {
+        showImage(index);
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+          modal.classList.remove('opacity-0');
+          modalImg.classList.remove('scale-95');
+          modalImg.classList.add('scale-100');
+        }, 10);
+        document.body.style.overflow = 'hidden';
+      };
 
       const closeModal = () => {
         modal.classList.add('opacity-0');
@@ -152,9 +174,41 @@ const readingTime = Math.ceil(wordCount / 200);
         }, 300);
       };
 
+      const showNext = (e) => {
+        if(e) e.stopPropagation();
+        currentIndex = (currentIndex + 1) % images.length;
+        showImage(currentIndex);
+      };
+
+      const showPrev = (e) => {
+        if(e) e.stopPropagation();
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        showImage(currentIndex);
+      };
+
+      // Attach click events to all images
+      images.forEach((img, index) => {
+        img.addEventListener('click', () => openModal(index));
+      });
+
+      // Button Listeners
       closeBtn.addEventListener('click', closeModal);
-      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
+      nextBtn?.addEventListener('click', showNext);
+      prevBtn?.addEventListener('click', showPrev);
+      
+      // Background click to close
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+      
+      // Keyboard Navigation
+      document.addEventListener('keydown', (e) => {
+        if (modal.classList.contains('hidden')) return; // Only run if modal is open
+        
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'ArrowRight') showNext();
+        if (e.key === 'ArrowLeft') showPrev();
+      });
     }
 
     // --- 2. Open Links in New Tab ---

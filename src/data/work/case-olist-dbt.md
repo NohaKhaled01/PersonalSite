@@ -16,7 +16,7 @@ order: 2
 
 ## The Problem: Navigating big data using new tools
 
-Olist is a Brazilian e-commerce marketplace that connects small retailers to major sales channels. Their public dataset consists of 9 relational tables covering orders, customers, sellers, products, payments, reviews, and geolocation. I picked this dataset because it intimidated me at first: 99K orders across 9 tables, from a marketplace I knew nothing about. I wanted to see whether I could find sense in foreign data of that size.
+Olist is a Brazilian e-commerce marketplace that connects small retailers to major sales channels. Their public dataset consists of 9 relational tables covering orders, customers, sellers, products, payments, reviews, and geolocation. I picked this dataset because I wanted to see whether I could find sense in foreign data of that size.
 
 I also had the goal of learning how to build informative Power BI reports, how to build dbt layers, and gaining an understanding of how these tools work together in a professional setting.
 
@@ -24,25 +24,19 @@ I also had the goal of learning how to build informative Power BI reports, how t
 
 ## My Role & Constraints
 
-I carried out this project in its two phases from start to finish. For the first phase, I chose to use Power BI along with MySQL, which I already had a strong base in, allowing me to focus on the data and PowerBI.
+I carried out phase 1 from start to finish, then phase 2. For the first phase, I chose to use Power BI along with MySQL. I was familiar with MySQL, and wanted to focus on the data and on PowerBI.
 
-During the second phase, I rebuilt a transformation and semantic layer using dbt and DuckDB. I wanted to focus on building the semantic layer and understanding dbt. To that effect, I picked DuckDB as it had the lowest learning curve and could be set up and managed easily on my own laptop.
+During the second phase, I rebuilt a transformation and semantic layer using dbt and DuckDB. I wanted to focus on building the semantic layer and understanding dbt, and I picked DuckDB as it had the lowest learning curve and could be set up and managed easily on my own laptop.
 
 ## Approach & Key Decisions
 
 ### Phase 1: MySQL + Power BI
 
-**Exploring the data**
+**Exploring the data & Narrowing the analysis scope**
 
-I started by exploring the data, gaining an understanding of each table's shape, content, and place in the schema. From this stage, I produced a list of observations, key numbers, and possible insights that could be drawn from each table.
+I began by exploring the dataset to understand each table’s shape, content, and role in the schema, producing a list of observations, key numbers, and potential insights. 
 
-**Narrowing down the analysis scope**
-
-Going completely rogue on a big dataset with no preset list of questions can be tricky. I was aware of my ability to dig deep and spend time on tiny questions that do not carry much value, and of the possibility of looking for an answer the data can't provide due to limitations in the data itself.
-
-To limit my analysis, I performed a statistical exploration where possible, with the goal of finding constraints, issues, and unclear features in the data, and subsequently crossing out unanswerable questions altogether.
-
-An example of an unanswerable question would be: *"How do customers pay for orders above 500 BRL?"* But if the dataset contains a very limited number of orders with a total value above 500 BRL, it isn't possible to draw a conclusion, and the question should not be pursued.
+To avoid going down low-value rabbit holes or pursuing questions the data cannot answer, I then narrowed the analysis scope by using statistical exploration to identify data constraints and issues and to cross out unanswerable questions (e.g. questions about rare cases such as orders of 500 USD or more when the dataset contains too few such orders to support a reliable answer).
 
 **Final list of questions**
 
@@ -108,7 +102,7 @@ The following table details the final dimensions and facts tables:
 
 **The original query and what it did:**
 
-To calculate customer retention, I had previously created a view inside MySQL to join the customers table to the orders table, and count the number of times the same customer placed an order using the window function COUNT() OVER(), counting customer's unique ID:
+To calculate customer retention, I had created a view in phase 1 inside MySQL to join the customers table to the orders table, and count the number of times the same customer placed an order using the window function COUNT() OVER(), counting customer's unique ID:
 
 ```sql
 CREATE VIEW customer_retention AS
@@ -137,7 +131,7 @@ DIVIDE(
 
 **What went wrong:**
 
-What this failed to do was group the customer IDs before counting them in PowerBI, inflating the count (customer IDs with 5 orders had 5 records for each order, and got counted 5 times. 10 order customers got counted 10 times, and so on). The final reported customer retention was 6%.
+What this failed to do was group the customer IDs before counting them in PowerBI, inflating the count (customer IDs with 5 orders had 5 records, one for each order, and got counted 5 times. 10 order customers got counted 10 times, and so on). The final reported customer retention was 6%.
 
 **dbt's correction**
 
@@ -176,7 +170,40 @@ It forced me to develop a deeper understanding of table grains to be able to dev
 
 6. All product categories have very close overall review scores, pointing to a null relationship between categories and satisfaction levels.
 
-![Figure 3: A slide example from the PowerBI report, showing relation between text in reviews & review scores.](../../../public/images/olist-powerbi-report/04-reviews.png)
+<!-- ![Figure 3: A slide example from the PowerBI report, showing relation between text in reviews & review scores.](../../../public/images/olist-powerbi-report/04-reviews.png) -->
+
+<div class="my-12">
+<!-- Caption -->
+  <div class="text-center font-medium text-sm text-dim mt-2 leading-relaxed">
+    Power BI Dashboard Snapshots (click to navigate):
+  </div>
+  <!-- The Carousel -->
+  <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div class="snap-center shrink-0 w-[90%] md:w-[90%]">
+      <img src="/images/olist-powerbi-report/01-overview.png" alt="Power BI dashboard overview" class="rounded-lg border border-border w-full h-auto cursor-zoom-in">
+    </div>
+    <div class="snap-center shrink-0 w-[90%] md:w-[90%]">
+      <img src="/images/olist-powerbi-report/02-customers.png" alt="Power BI customers dashboard" class="rounded-lg border border-border w-full h-auto cursor-zoom-in">
+    </div>
+    <div class="snap-center shrink-0 w-[90%] md:w-[90%]">
+      <img src="/images/olist-powerbi-report/03-reviews.png" alt="Power BI reviews dashboard" class="rounded-lg border border-border w-full h-auto cursor-zoom-in">
+    </div>
+    <div class="snap-center shrink-0 w-[90%] md:w-[90%]">
+      <img src="/images/olist-powerbi-report/04-reviews.png" alt="Power BI reviews dashboard" class="rounded-lg border border-border w-full h-auto cursor-zoom-in">
+    </div>
+    <div class="snap-center shrink-0 w-[90%] md:w-[90%]">
+      <img src="/images/olist-powerbi-report/05-payments.png" alt="Power BI reviews dashboard" class="rounded-lg border border-border w-full h-auto cursor-zoom-in">
+    </div>
+    <div class="snap-center shrink-0 w-[90%] md:w-[90%]">
+      <img src="/images/olist-powerbi-report/06-payments.png" alt="Power BI reviews dashboard" class="rounded-lg border border-border w-full h-auto cursor-zoom-in">
+    </div>
+    <div class="snap-center shrink-0 w-[90%] md:w-[90%]">
+      <img src="/images/olist-powerbi-report/07-delivery.png" alt="Power BI reviews dashboard" class="rounded-lg border border-border w-full h-auto cursor-zoom-in">
+    </div>
+    <div class="snap-center shrink-0 w-[90%] md:w-[90%]">
+      <img src="/images/olist-powerbi-report/08-delivery&reviews.png" alt="Power BI reviews dashboard" class="rounded-lg border border-border w-full h-auto cursor-zoom-in">
+    </div>
+  </div>
 
 
 ## What Changed: Between the two phases
@@ -185,9 +212,9 @@ Phase 2 (dbt + DuckDB) introduced a lot of structure and reliability to the data
 
 ## What I’d do differently
 
-1. Borrow the dbt structure from the start, even if the first version runs on MySQL. By the dbt structure, I mean staging, testing, documentation, and lineage flow. This structure would help catch and reduce errors more efficiently.
+1. Borrow the dbt structure from the start, even in the first MySQL version. By the dbt structure, I mean staging, testing, documentation, and lineage flow. This structure would help catch and reduce errors more efficiently.
 
-2. Cross-check calculated Power BI measures against queries in SQL as a double-check step. A five-minute sanity check on the number of distinct unique customer IDs could have caught the retention mistake.
+2. Cross-check calculated Power BI measures against queries in SQL as a double-check step. A two-minute sanity check on the number of distinct unique customer IDs could have caught the retention mistake.
 
 <!-- ## Where it is now
 

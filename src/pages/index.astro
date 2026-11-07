@@ -65,13 +65,20 @@ import ProjectCard from "../components/ProjectCard.astro";
     </p>
 
     <!-- 4. The Buttons -->
-    <div class="mt-10 flex items-center gap-4">
+    <div class="mt-10 flex items-center gap-4 group-hover:text-accent">
       <a href="/work" class="bg-accent text-base text-base px-6 py-3 rounded-md font-medium hover:bg-accent-dark transition-colors">
         View my work
       </a>
-      <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" class="text-onyx font-medium hover:text-accent transition flex items-center gap-1.5">
+
+      <a href="../../public/Noha Khaled Resume.pdf" target="_blank" rel="noopener noreferrer" class="text-onyx font-medium hover:text-accent transition flex items-center gap-1.5">
         Download resume 
-        <svg class="text-onyx" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+        <svg class="text-current" xmlns="http://www.w3.org/2000/svg" width="14" height="14" 
+        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="7" y1="17" x2="17" y2="7">
+        </line>
+        <polyline points="7 7 17 7 17 17">
+          </polyline>
+        </svg>
       </a>
     </div>
   </div>
@@ -87,7 +94,8 @@ import ProjectCard from "../components/ProjectCard.astro";
       
       <ProjectCard 
         title="Engineering Simulation Data Pipeline"
-        description="A normalized MySQL database and Python ETL pipeline that consolidated simulation data from four scattered sources into one queryable source — with fuzzy matching and change detection."
+        description="A normalized MySQL database and Python ETL pipeline that consolidated simulation data from four scattered sources 
+        into one queryable source, with fuzzy matching and change detection."
         tags={["Python", "MySQL", "SQLAlchemy", "Fuzzy matching"]}
         url="/work/case-engineering-pipeline"
       />
@@ -103,15 +111,15 @@ import ProjectCard from "../components/ProjectCard.astro";
   </section>
 
   <!-- About Teaser -->
-   <!-- About Teaser: Option 1 -->
   <section class="mt-24 max-w-5xl">
     <p class="font-mono text-sm text-accent uppercase tracking-wider mb-4">Background</p>
     <p class="text-dim text-lg md:text-xl leading-relaxed">
-      Mechanical engineer by training, 7+ years in simulation and CFD, lead technical analyst by the end — now building analytics systems with the same
-      mindset: understand the system, fix it, and explain what I did and why.
+      Mechanical engineer by training, 7+ years in simulation and CFD, lead technical analyst by the end. <br>
+      Now building analytics systems with the same mindset: understand the system, fix it, and explain what I did.
     </p>
-    <a href="/about" class="mt-6 inline-flex items-center gap-2 text-onyx font-medium hover:text-accent transition-colors">
-      More about me <span class="text-accent">→</span>
+    <a href="/about" class="group mt-6 inline-flex items-center gap-2 text-onyx font-medium hover:text-accent transition-colors">
+      More about me 
+      <span class="group-hover:translate-x-1 transition-transform text-accent">→</span>
     </a>
   </section>
 
