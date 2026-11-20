@@ -2,7 +2,7 @@
 title: Olist E-commerce Analytics (dbt)
 description: A 9-table MySQL model of 99K+ orders, rebuilt in dbt Core + DuckDB as a proper star schema — including fixing a grain error that had inflated customer-retention figures.
 tags: ["dbt", "DuckDB", "MySQL", "Power BI"]
-order: 2
+order: 3
 ---
 # Olist E-commerce Analytics (dbt)
 

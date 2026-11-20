@@ -2,7 +2,7 @@
 title: Engineering Simulation Data Pipeline
 description: A normalized MySQL database and Python ETL pipeline that consolidated simulation data from four scattered sources into one queryable source, with fuzzy matching and change detection.
 tags: ["Python", "MySQL", "SQLAlchemy", "Pandas", "Fuzzy matching"]
-order: 1
+order: 2
 ---
 
 ## TL;DR
@@ -90,11 +90,7 @@ To avoid flowline duplications, I extracted metadata describing the flowlines an
 
 When the firm shut down, eight of the ten tables were complete and operational; two, *flowline_data* and *parts_results*, were still under development.
 
-After the closure, I chose not to finish those two tables. Instead, I built what the next phase would have needed: an automated ETL pipeline for future data, running from the moment files land in Azure Blob Storage to a final, ready-to-query database for the team. Case study coming soon.
-
-I am currently writing the case study for that project. Meanwhile, check the repo on [GitHub](https://github.com/NohaKhaled01/EngineeringSimulationDataWarehouse_Azure_MySql)
-
-<!-- I wrote this up as a separate case study: [Automating the simulation data pipeline on Azure](link). -->
+After the closure, I chose not to finish those two tables. Instead, I migrated the database into Azure, built a dbt layer to make the database more accessible and useable for the team and management, and made a failed attempt to automate the ingestion process. Read about it [here](/work/case-engineering-azure).
 
 ## See the code
 
