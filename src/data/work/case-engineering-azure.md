@@ -8,8 +8,8 @@ order: 1
 ## TL;DR
 
 - Migrated a MySQL database from my laptop to an Azure Database for MySQL Flexible Server.
-- Built a complementary dbt layer on top of the data (staging + a denormalized, question-oriented marts layer).
-- Created an analyses layer and a connection guide for the team.
+- Built a complementary dbt layer on top of the data: staging + denormalized, question-oriented marts.
+- Created an analyses layer containing most frequent queries with their explanations, to ease database usage for the team.
 - Attempted event-driven automation using Azure Event Grid triggers and Azure Functions.
 
 *Solo build, post-company closure · 2026 · MySQL, Azure, dbt Core, Event Driven*
@@ -41,7 +41,9 @@ I decided to work on migrating the data to Azure, automating ingestion and proce
 
 I created a resource group, a resource, and a MySQL Server, then connected MySQL Workbench to the Azure Server. I updated the Python scripts to load data to the new connection, ran them, and loaded the data into the database.
 
-### Building the dbt layer: Staging layer
+### dbt: Staging & Marts
+
+**Staging Layer**
 
 The staging layer read from the Azure MySQL Server and performed lightweight transformations — data formats and column names. Most transformation had already been done in the Python scripts, so the staging layer served more as a validation layer: testing that start dates preceded end dates and testing PK–FK relationships.
 
@@ -66,8 +68,8 @@ WHERE {{ column_name }} < {{ earlier_column }}
 
 {% endtest %}
 ```
+**Marts Layer**
 
-### Building the dbt layer: Marts layer
 I built the marts layer in a denormalized, question-oriented fashion, keeping in mind how the team and management would use the database. I did not follow a strict star schema design.
 
 I wrote the mart SQL files, then documented them in the YAML file. Below is an example for the mart file querying the last time a project was active and its details, along with its description: 
@@ -117,7 +119,7 @@ FROM final
       description: 'Request ending date'
 ```
 
-### Building the dbt layer: Analyses
+### dbt: Analyses
 I built the analyses files on top of the mart layer. I wrote down the most frequent queries so the team could access and use them easily. Inside each file, I explained the query's usage and how to create it manually. Below are two examples for *Number of parts in each project* and *Finding the last time a project was active*:
 
 ```sql
