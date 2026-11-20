@@ -151,6 +151,8 @@ ORDER BY project_id, project_title
 ;
 ```
 
+Below is the final lineage graph:
+
 ![Figure 1: Lineage Graph](../../../public/images/azure-lineage-graph.png)
 
 ### Automating Data Ingestion
