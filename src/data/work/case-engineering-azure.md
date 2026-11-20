@@ -151,6 +151,8 @@ ORDER BY project_id, project_title
 ;
 ```
 
+![Figure 1: Lineage Graph](../../../public/images/azure-lineage-graph.png)
+
 ### Automating Data Ingestion
 The planned automation sequence was:
 
