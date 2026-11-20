@@ -3,6 +3,7 @@ title: Engineering Simulation Data Pipeline - Part II, Azure Migration & dbt lay
 description: A continuation of the previous MySQL database and Python ETL pipeline project; Migrating the database to Azure MySQL server, and building a staging - marts - analyses dbt layer on top of it.
 tags: ["Azure", "dbt Core", "MySQL", "Data Migration"]
 order: 1
+ogImage: "/images/og-azure-case-study.png"
 ---
 
 ## TL;DR

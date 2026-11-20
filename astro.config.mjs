@@ -5,6 +5,7 @@ import rehypeFigure from "rehype-figure";
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://nohakhaled.com', 
   vite: {
     plugins: [tailwindcss()],
   },

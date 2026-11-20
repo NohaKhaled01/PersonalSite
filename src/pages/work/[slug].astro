@@ -23,8 +23,12 @@ const wordCount = project.body ? project.body.split(/\s+/).length : 0;
 const readingTime = Math.ceil(wordCount / 200);
 ---
 
-<Layout title={`${project.data.title} — Noha Khaled`}>
-  
+<Layout 
+  title={`${project.data.title} — Noha Khaled`}
+  description={project.data.description}
+  ogImage={project.data.ogImage}
+>
+
   <!-- Changed to a max-w-6xl flex container to fit the sidebar -->
   <div class="max-w-7xl mx-auto flex gap-16 relative items-start">
     

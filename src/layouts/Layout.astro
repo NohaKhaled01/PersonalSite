@@ -7,11 +7,19 @@ import { ClientRouter } from 'astro:transitions';
 interface Props {
   title: string;
   description?: string;
+  ogImage?: string; // <-- Added optional ogImage prop
 }
+
 const { 
   title, 
-  description = "Analytics engineer with 7+ years of engineering problem-solving experience. I build reliable pipelines, data models, and reporting from messy, technical data." 
+  description = "Analytics engineer with 7+ years of engineering problem-solving experience. I build reliable pipelines, data models, and reporting from messy, technical data.",
+  ogImage = "/og-image.png" // <-- Default fallback
 } = Astro.props;
+
+// Dynamically construct the absolute URLs
+const siteUrl = Astro.site ? Astro.site.href.replace(/\/$/, '') : 'https://nohakhaled.com';
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
+const absoluteOgImage = ogImage.startsWith('http') ? ogImage : new URL(ogImage, siteUrl).href;
 ---
 
 <!doctype html>
@@ -19,16 +27,14 @@ const {
   <head>
     <meta charset="UTF-8" />
     <ClientRouter />
-    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
 
     <!-- Logo -->
-     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
      
-  <!-- Theme Script (Must be in head to prevent flash of unstyled content) -->
+    <!-- Theme Script (Must be in head to prevent flash of unstyled content) -->
     <script is:inline>
-      // Helper functions
       const getTheme = () => {
         if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
           return localStorage.getItem('theme');
@@ -58,31 +64,31 @@ const {
       });
     </script>
     
-        <!-- SEO Meta Tags -->
+    <!-- SEO Meta Tags -->
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    
+    <!-- Open Graph (Social Media) -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Noha Khaled" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={absoluteOgImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
     
-    <!-- Social Media Thumbnail (Open Graph) -->
-    <meta property="og:url" content="https://nohakhaled.com" />
-    <meta property="og:image" content="https://nohakhaled.com/og-image.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    
-    <!-- Twitter Card (Also used by some other platforms) -->
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content="https://nohakhaled.com/og-image.png" />
+    <meta name="twitter:image" content={absoluteOgImage} />
 
   </head>
-
 
   <body class="bg-base text-onyx font-sans antialiased min-h-screen flex flex-col">
     
